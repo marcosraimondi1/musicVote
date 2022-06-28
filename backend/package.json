@@ -1,0 +1,43 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/node": "^7.16.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "morgan": "^1.10.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.1.8",
+    "bcrypt": "^5.0.1",
+    "mongoose-unique-validator": "^3.0.0"
+  },
+  "scripts": {
+    "devn": "nodemon api/index.js --exec node_modules/.bin/babel-node",
+    "start": "node api/index.js --exec node_modules/.bin/babel-node",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write ./api --config ./.prettierrc"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.2"
+  }
+}
