@@ -1,19 +1,18 @@
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
+const { generateRandomString } = require("../helper/fetchApi");
 
-let checkAuth = (req, res, next) => {
-  let token = req.get("token");
-  jwt.verify(token, process.env.SECURE_SALT, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({
-        status: "error",
-        error: err
-      });
-    }
-    req.userData = decoded.userData;
+const checkSession = (req, res, next) => {
+  let session = req.get("session");
+  if (!session || !session.id) {
+    // create new session
+    req.session = {
+      id: generateRandomString(16)
+    };
+  } else {
+    // use session
+    req.session = session;
+  }
 
-    next();
-  });
+  next();
 };
 
-module.exports = { checkAuth };
+module.exports = { checkSession };
