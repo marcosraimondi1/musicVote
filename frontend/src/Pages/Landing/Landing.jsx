@@ -36,7 +36,7 @@ export default function Login() {
       const data = await res.json();
 
       if (data.status === "success") {
-        window.localStorage.setItem("session", data.session);
+        window.localStorage.setItem("session", JSON.stringify(data.session));
         navigate("./room?code=" + roomCode, { replace: true });
         return;
       }
