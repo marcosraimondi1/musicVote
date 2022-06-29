@@ -1,7 +1,11 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
 
 export default function Login() {
+  const [code, setCode] = useState("");
+  const navigate = useNavigate();
   const login = async () => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     try {
@@ -20,18 +24,23 @@ export default function Login() {
     }
   };
 
-  const join = async (roomId) => {
+  const join = async (roomCode) => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     try {
-      const url = `${API_BASE_URL}/join?roomId=${roomId}`;
-      let res = await fetch(url, {
+      const url = `${API_BASE_URL}/room?code=${roomCode}`;
+      const res = await fetch(url, {
         method: "GET",
         mode: "cors"
       });
-      if (res.status === 200) {
-        alert("Success");
+
+      const data = await res.json();
+
+      if (data.status === "success") {
+        window.localStorage.setItem("session", data.session);
+        navigate("./room?code=" + roomCode, { replace: true });
         return;
       }
+      alert("Room not found");
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +49,8 @@ export default function Login() {
   return (
     <>
       <Header id="spotify-masthead" title="Spotify Voting Lobby" description="Join or Start a room">
-        <button onClick={() => join(10)}>Join Room</button>
+        <input value={code} onChange={(ev) => setCode(ev.target.value)} />
+        <button onClick={() => join(code)}>Join Room</button>
         <button onClick={login}>New Room</button>
       </Header>
       <Footer />

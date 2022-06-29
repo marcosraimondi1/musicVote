@@ -15,7 +15,7 @@ router.get("/room", checkSession, async (req, res) => {
   try {
     const session = req.session;
 
-    const room = await Room.findOne({ id: req.query.roomId });
+    const room = await Room.findOne({ code: req.query.code });
 
     if (!room) {
       return res.status(400).json({ status: "error", error: "Room not found" });
@@ -107,11 +107,9 @@ async function check_tokens(roomId) {
   const room = await Room.findOne({ _id: roomId });
   if (room) {
     if (is_token_expired(room.tokens.expires_in)) {
-      console.log("Expiro");
       // si expiro actualizamos los tokens
       const tokens = await refreshTokens(room.tokens.refresh_token);
       await Room.updateOne({ _id: roomId }, { tokens });
     }
-    console.log("No Expiro");
   }
 }
