@@ -36,8 +36,7 @@ router.get("/login-spotify", async (req, res) => {
 
     const toSend = {
       status: "success",
-      url,
-      session
+      url
     };
 
     return res.json(toSend);
@@ -88,12 +87,12 @@ module.exports = router;
 
 /**
  * Create Room
- * @param {Object} tokens 
+ * @param {Object} tokens
  * @returns {Object} room
  */
 async function createRoom(tokens) {
-  const url = base_url + "/api/create";
-
+  const url = base_url + "api/create";
+  console.log(url);
   const body = {
     tokens
   };
@@ -105,10 +104,12 @@ async function createRoom(tokens) {
   });
 
   const data = await response.json();
-  
+
+  console.log(data);
+
   if (data.status == "success") {
     return data.data;
   }
-  
+
   return null;
 }
