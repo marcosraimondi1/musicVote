@@ -45,6 +45,8 @@ router.put("/room", checkSession, async (req, res) => {
       await Room.updateOne({ code }, { user_session_id });
     }
 
+    await check_tokens(room._id);
+
     return res.status(200).json({ status: "success", session: req.session });
   } catch (error) {
     console.log("Error updating room host id");
@@ -101,15 +103,15 @@ function is_token_expired(expires_in) {
  * Revisa la validez de los tokens, y los actualiza
  * @param {string} userId
  */
-async function check_tokens(userId) {
-  const user = await User.findOne({ _id: userId });
-  if (user) {
-    if (is_token_expired(user.expires_in)) {
+async function check_tokens(roomId) {
+  const room = await Room.findOne({ _id: roomId });
+  if (room) {
+    if (is_token_expired(room.tokens.expires_in)) {
+      console.log("Expiro");
       // si expiro actualizamos los tokens
-      const tokens = await refreshTokens(user.refresh_token);
-      const { access_token, refresh_token } = tokens;
-      const expires_in = Date.now() + tokens.expires_in * 1000;
-      await User.update({ _id: userId }, { access_token, refresh_token, expires_in });
+      const tokens = await refreshTokens(room.tokens.refresh_token);
+      await Room.updateOne({ _id: roomId }, { tokens });
     }
+    console.log("No Expiro");
   }
 }

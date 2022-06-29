@@ -100,10 +100,10 @@ async function fetchAccessToken(code) {
  * 	@param {string} refresh_token  - refresh token
  * 	@returns {Promise<object>} - description
  */
-async function refreshTokens(refresh_token) {
+async function refreshTokens(ref_token) {
   const body = new URLSearchParams({
     grant_type: "refresh_token",
-    refresh_token: refresh_token,
+    refresh_token: ref_token,
     redirect_uri: redirect_uri
   });
 
@@ -119,7 +119,12 @@ async function refreshTokens(refresh_token) {
   if (response.status === 200) {
     response = await response.json();
 
-    const { access_token, refresh_token, expires_in } = response;
+    let { access_token, refresh_token, expires_in } = response;
+    expires_in = Date.now() + expires_in * 1000;
+
+    if (!refresh_token) {
+      refresh_token = ref_token;
+    }
 
     return { access_token, refresh_token, expires_in };
   }

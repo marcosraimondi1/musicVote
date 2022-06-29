@@ -27,6 +27,7 @@ export default function RoomPreview() {
     if (data.status != "success") {
       alert("error al crear sala, intente de nuevo");
       navigate("../", { replace: true });
+      return;
     }
 
     localStorage.setItem("session", JSON.stringify(data.session));
