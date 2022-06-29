@@ -17,24 +17,24 @@ const router = express.Router();
  */
 router.get("/login-spotify", async (req, res) => {
   try {
-    let state = generateRandomString(16);
+    const state = generateRandomString(16);
 
     // data a la que quiero tener acceso
-    let scope =
+    const scope =
       "user-read-private user-read-email " +
       "playlist-read-collaborative playlist-read-private " +
       "user-read-playback-state user-modify-playback-state user-read-currently-playing";
 
     // parametros necesarios de la url (ver api docs)
-    let params = new URLSearchParams({
+    const params = new URLSearchParams({
       response_type: "code",
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: redirect_uri,
-      state: state
+      client_id,
+      scope,
+      redirect_uri,
+      state
     }).toString();
 
-    let url = "https://accounts.spotify.com/authorize?" + params;
+    const url = "https://accounts.spotify.com/authorize?" + params;
 
     const toSend = {
       status: "success",
@@ -61,51 +61,26 @@ router.get("/callback", async (req, res) => {
     if (error) return res.status(400).json({ status: "error", error });
 
     // fetch for access token
-    let tokens = await fetchAccessToken(code);
+    const tokens = await fetchAccessToken(code);
 
-    if (tokens) {
-      // retrieve users profile
-      let profile = await fetchProfile(tokens.access_token);
+    if (!tokens) return res.status(405).json({ error: "failed to get tokens" });
 
-      const username = profile?.name;
-      const email = profile?.id;
-      const { access_token, refresh_token } = tokens;
-      let user = await User.findOne({ email });
+    // retrieve users profile
+    const profile = await fetchProfile(tokens.access_token);
 
-      if (user) {
-        // if user exists update token and refresh token
-        await User.update({ email }, { access_token, refresh_token });
-      } else {
-        // create new user
-        user = {
-          name: username,
-          email: email,
-          access_token,
-          refresh_token
-        };
-        await User.create(user);
-        user = await User.findOne({ email });
-      }
+    const username = profile?.name;
+    const email = profile?.id;
+    const { access_token, refresh_token } = tokens;
 
-      // create new room
-      const room = {
-        created: Date.now(),
-        userId: user._id,
-        id: generateRandomString(6)
-      };
-      await Room.create(room);
+    const room = await createUserRoom(email, access_token, refresh_token, username);
 
-      // update user with new room
-      await User.update({ email }, { roomId: room.id });
+    if (username) {
+      // redirect to web app
+      let link = "http://localhost:3000/room?roomId=" + room.id;
 
-      if (username) {
-        // redirect to web app
-        let link = "http://localhost:3000/room?roomId=" + room.id;
+      if (process.env.NODE_ENV === "production") link = base_url + "/room?roomId=" + room.id;
 
-        if (process.env.NODE_ENV === "production") link = base_url + "/room?roomId=" + room.id;
-
-        return res.redirect(link);
-      }
+      return res.redirect(link);
     }
   } catch (error) {
     console.log("ERROR CALLBACK");
@@ -120,3 +95,38 @@ router.get("/callback", async (req, res) => {
 });
 
 module.exports = router;
+
+/**
+ * F U N C T I O N S
+ */
+
+async function createUserRoom(email, access_token, refresh_token, username) {
+  let user = await User.findOne({ email });
+
+  if (user) {
+    // if user exists update token and refresh token
+    await User.update({ email }, { access_token, refresh_token });
+  } else {
+    // create new user
+    user = {
+      name: username,
+      email: email,
+      access_token,
+      refresh_token
+    };
+    await User.create(user);
+    user = await User.findOne({ email });
+  }
+
+  // create new room
+  const room = {
+    created: Date.now(),
+    userId: user._id,
+    id: generateRandomString(6)
+  };
+  await Room.create(room);
+
+  // update user with new room
+  await User.update({ email }, { roomId: room.id });
+  return room;
+}
