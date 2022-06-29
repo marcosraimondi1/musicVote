@@ -5,13 +5,14 @@
   "dependencies": {
     "@babel/core": "^7.17.5",
     "@babel/node": "^7.16.8",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "mongoose": "^6.1.8",
     "mongoose-unique-validator": "^3.0.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^3.2.6"
+    "node-fetch": "2.6.1"
   },
   "scripts": {
     "devn": "nodemon api/index.js --exec node_modules/.bin/babel-node",
