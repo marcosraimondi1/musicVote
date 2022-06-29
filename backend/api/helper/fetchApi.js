@@ -62,13 +62,48 @@ async function fetchProfile(access_token) {
 
 /**
  * 	Returns Tokens
- * 	@param {string} code  - code returned by login in auth0 or refresh token
+ * 	@param {string} code  - code returned by login in auth0
  * 	@returns {Promise<object>} - description
  */
 async function fetchAccessToken(code) {
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     code: code,
+    redirect_uri: redirect_uri
+  });
+
+  let response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: "Basic " + Buffer.from(client_id + ":" + client_secret).toString("base64")
+    },
+    body: body
+  });
+
+  if (response.status === 200) {
+    response = await response.json();
+
+    const { access_token, refresh_token, expires_in } = response;
+
+    return { access_token, refresh_token, expires_in };
+  }
+
+  response = await response.json();
+
+  console.log(response);
+  return null;
+}
+
+/**
+ * 	Returns Tokens
+ * 	@param {string} refresh_token  - refresh token
+ * 	@returns {Promise<object>} - description
+ */
+async function refreshTokens(refresh_token) {
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: refresh_token,
     redirect_uri: redirect_uri
   });
 
@@ -181,5 +216,6 @@ module.exports = {
   fetchProfile,
   fetchAccessToken,
   fetchPlaylists,
-  fetchPlaylistSongs
+  fetchPlaylistSongs,
+  refreshTokens
 };
