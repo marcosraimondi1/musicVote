@@ -5,8 +5,10 @@ const Schema = mongoose.Schema;
 
 const roomSchema = new Schema({
   created: { type: Number, required: [true] },
-  userId: { type: String, required: [true] },
-  id: { type: String, required: [true], unique: true }
+  user_session_id: { type: String, required: [true] },
+  code: { type: String, required: [true], unique: true },
+  tokens: { type: Object, required: [true] },
+  options: { type: Array, default: [] }
 });
 
 // Validator
