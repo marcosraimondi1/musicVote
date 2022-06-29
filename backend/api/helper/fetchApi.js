@@ -62,7 +62,7 @@ async function fetchProfile(access_token) {
 
 /**
  * 	Returns Tokens
- * 	@param {string} code  - code returned by login in auth0
+ * 	@param {string} code  - code returned by login in auth0 or refresh token
  * 	@returns {Promise<object>} - description
  */
 async function fetchAccessToken(code) {
