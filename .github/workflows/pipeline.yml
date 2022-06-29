@@ -93,7 +93,7 @@ jobs:
           EOM
 
      - name: Build
-       run: cd frontend && npm run build && cd .. && rm ./backend/dist -r &&  mv ./frontend/dist ./backend
+       run: cd frontend && npm run build && cd .. && mv ./frontend/dist ./backend
     
      - uses: actions/upload-artifact@v3
        with:
