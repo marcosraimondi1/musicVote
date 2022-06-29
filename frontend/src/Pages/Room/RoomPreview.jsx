@@ -10,11 +10,16 @@ export default function RoomPreview() {
 
   const startRoom = async () => {
     const url = import.meta.env.VITE_API_BASE_URL;
-
+    const toSend = {
+      code: roomCode
+    };
     const res = await fetch(url + "/room", {
       method: "PUT",
       mode: "cors",
-      body: JSON.stringify({ code: roomCode })
+      body: JSON.stringify(toSend),
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
 
     const data = await res.json();
