@@ -1,15 +1,13 @@
 const express = require("express");
+const fetch = require("node-fetch");
 require("dotenv").config();
 
-// models import
-const { User } = require("../models/user.js");
-const { Room } = require("../models/room.js");
-
-const { generateRandomString, fetchAccessToken, fetchProfile } = require("../helper/fetchApi.js");
+const { generateRandomString, fetchAccessToken } = require("../helper/fetchApi.js");
 
 const client_id = process.env.SPOT_CLIENT_ID;
 const redirect_uri = process.env.SPOT_REDIRECT_URI;
 const base_url = process.env.BASE_URL;
+
 const router = express.Router();
 
 /**
@@ -38,7 +36,8 @@ router.get("/login-spotify", async (req, res) => {
 
     const toSend = {
       status: "success",
-      url
+      url,
+      session
     };
 
     return res.json(toSend);
@@ -65,68 +64,51 @@ router.get("/callback", async (req, res) => {
 
     if (!tokens) return res.status(405).json({ error: "failed to get tokens" });
 
-    // retrieve users profile
-    const profile = await fetchProfile(tokens.access_token);
+    const room = await createRoom(tokens);
 
-    const username = profile?.name;
-    const email = profile?.id;
-    const { access_token, refresh_token } = tokens;
+    if (!room) return res.status(506).json({ error: "failed to create room" });
 
-    const room = await createUserRoom(email, access_token, refresh_token, username);
+    // redirect to web app
+    let link = "http://localhost:3000/create?code=" + room.code;
 
-    if (username) {
-      // redirect to web app
-      let link = "http://localhost:3000/room?roomId=" + room.id;
+    if (process.env.NODE_ENV === "production") link = base_url + "/create?code=" + room.code;
 
-      if (process.env.NODE_ENV === "production") link = base_url + "/room?roomId=" + room.id;
-
-      return res.redirect(link);
-    }
+    return res.redirect(link);
   } catch (error) {
     console.log("ERROR CALLBACK");
     console.log(error);
+
+    let link = "http://localhost:3000/";
+    if (process.env.NODE_ENV === "production") link = base_url + "/";
+    return res.redirect(link);
   }
-
-  let link = "http://localhost:3000/";
-
-  if (process.env.NODE_ENV === "production") link = base_url + "/";
-
-  return res.redirect(link);
 });
 
 module.exports = router;
 
 /**
- * F U N C T I O N S
+ * Create Room
+ * @param {Object} tokens 
+ * @returns {Object} room
  */
+async function createRoom(tokens) {
+  const url = base_url + "/api/create";
 
-async function createUserRoom(email, access_token, refresh_token, username) {
-  let user = await User.findOne({ email });
-
-  if (user) {
-    // if user exists update token and refresh token
-    await User.update({ email }, { access_token, refresh_token });
-  } else {
-    // create new user
-    user = {
-      name: username,
-      email: email,
-      access_token,
-      refresh_token
-    };
-    await User.create(user);
-    user = await User.findOne({ email });
-  }
-
-  // create new room
-  const room = {
-    created: Date.now(),
-    userId: user._id,
-    id: generateRandomString(6)
+  const body = {
+    tokens
   };
-  await Room.create(room);
 
-  // update user with new room
-  await User.update({ email }, { roomId: room.id });
-  return room;
+  const response = await fetch(url, {
+    method: "post",
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" }
+  });
+
+  const data = await response.json();
+  
+  if (data.status == "success") {
+    return data.data;
+  }
+  
+  return null;
 }
