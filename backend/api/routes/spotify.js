@@ -5,11 +5,7 @@ require("dotenv").config();
 const { User } = require("../models/user.js");
 const { Room } = require("../models/room.js");
 
-const {
-  generateRandomString,
-  fetchAccessToken,
-  fetchProfile
-} = require("../helper/fetchApi.js");
+const { generateRandomString, fetchAccessToken, fetchProfile } = require("../helper/fetchApi.js");
 
 const client_id = process.env.SPOT_CLIENT_ID;
 const redirect_uri = process.env.SPOT_REDIRECT_URI;

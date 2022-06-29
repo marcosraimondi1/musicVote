@@ -17,7 +17,6 @@ function mongo_config() {
     useNewUrlParser: true,
     // useCreateIndex: true,
     useUnifiedTopology: true,
-    useNewUrlParser: true,
     authSource: "admin"
   };
 
