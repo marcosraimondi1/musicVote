@@ -9,7 +9,7 @@ const {
   generateRandomString,
   fetchAccessToken,
   fetchProfile
-} = require("../helper/spotifyApi/fetchApi.js");
+} = require("../helper/fetchApi.js");
 
 const client_id = process.env.SPOT_CLIENT_ID;
 const redirect_uri = process.env.SPOT_REDIRECT_URI;
