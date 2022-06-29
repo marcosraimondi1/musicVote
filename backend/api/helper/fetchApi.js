@@ -84,8 +84,8 @@ async function fetchAccessToken(code) {
   if (response.status === 200) {
     response = await response.json();
 
-    const { access_token, refresh_token, expires_in } = response;
-
+    let { access_token, refresh_token, expires_in } = response;
+    expires_in = Date.now() + expires_in * 1000;
     return { access_token, refresh_token, expires_in };
   }
 
