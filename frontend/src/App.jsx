@@ -5,12 +5,6 @@ import Landing from "./Pages/Landing/Landing";
 import Room from "./Pages/Room/Room";
 
 /**
- * G L O B A L   V A R I A B L E S
- */
-
-global.BASE_API_URL = import.meta.env.VITE_API_BASE_URL;
-
-/**
  * R O U T E R
  */
 

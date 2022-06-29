@@ -3,7 +3,7 @@ import Header from "../../components/Header/Header";
 
 export default function Login() {
   const login = async () => {
-    const API_BASE_URL = global.BASE_API_URL;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     try {
       const url = `${API_BASE_URL}/login-spotify`;
       let res = await fetch(url, {
@@ -21,7 +21,7 @@ export default function Login() {
   };
 
   const join = async (roomId) => {
-    const API_BASE_URL = global.BASE_API_URL;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     try {
       const url = `${API_BASE_URL}/join?roomId=${roomId}`;
       let res = await fetch(url, {
