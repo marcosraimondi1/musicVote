@@ -11,7 +11,7 @@ const router = express.Router();
 /**
  * Ruta para unirse a una sala
  */
-router.get("/join", checkSession, async (req, res) => {
+router.get("/room", checkSession, async (req, res) => {
   try {
     const session = req.session;
 
@@ -32,11 +32,14 @@ router.get("/join", checkSession, async (req, res) => {
 /**
  * Ruta para actualizar el host de la sala
  */
-router.put("/hostid", checkSession, async (req, res) => {
+router.put("/room", checkSession, async (req, res) => {
   try {
     const user_session_id = req.session.id;
     const code = req.body.code;
+
     const room = await Room.findOne({ code });
+
+    if (!room) return res.status(404).json({ status: "error", error: "room not found" });
 
     if (room.user_session_id == "$") {
       await Room.updateOne({ code }, { user_session_id });
@@ -53,7 +56,7 @@ router.put("/hostid", checkSession, async (req, res) => {
 /**
  * Ruta para crear una sala
  */
-router.post("/create", async (req, res) => {
+router.post("/room", async (req, res) => {
   try {
     const tokens = req.body.tokens;
 

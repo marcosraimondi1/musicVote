@@ -91,8 +91,8 @@ module.exports = router;
  * @returns {Object} room
  */
 async function createRoom(tokens) {
-  const url = base_url + "api/create";
-  console.log(url);
+  const url = base_url + "api/room";
+
   const body = {
     tokens
   };
@@ -104,8 +104,6 @@ async function createRoom(tokens) {
   });
 
   const data = await response.json();
-
-  console.log(data);
 
   if (data.status == "success") {
     return data.data;
