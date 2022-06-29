@@ -24,6 +24,11 @@ export default function RoomPreview() {
 
     const data = await res.json();
 
+    if (data.status != "success") {
+      alert("error al crear sala, intente de nuevo");
+      navigate("../", { replace: true });
+    }
+
     localStorage.setItem("session", JSON.stringify(data.session));
 
     navigate("../room?code=" + roomCode, { replace: true });
