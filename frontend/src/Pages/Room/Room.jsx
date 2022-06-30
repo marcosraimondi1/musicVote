@@ -7,7 +7,6 @@ export default function Room() {
   const [roomCode, setRoomCode] = useState("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState({});
   const [session, setSession] = useState({});
-  const [progress, setProgress] = useState(100);
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -18,7 +17,7 @@ export default function Room() {
     const ses = JSON.parse(window.localStorage.getItem("session"));
     setSession(ses);
 
-    fetchData();
+    const dataPolling = setInterval(fetchData, 1000);
 
     async function fetchData() {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -37,7 +36,6 @@ export default function Room() {
 
         if (data.status === "success") {
           setCurrentlyPlaying(data.data);
-          setProgress();
           // window.localStorage.setItem("session", JSON.stringify(data.session));
         } else {
           alert("Room not found");
@@ -46,6 +44,10 @@ export default function Room() {
         console.log(error);
       }
     }
+
+    return () => {
+      clearInterval(dataPolling);
+    };
   }, []);
 
   return (
@@ -61,7 +63,7 @@ export default function Room() {
             }}
           >
             <img src={currentlyPlaying?.image} alt="Album" height="100" width="100" />
-            <div style={{ width: 100, height: 10, margin: 2 }}>
+            <div style={{ width: 100, height: 5, margin: 2 }}>
               <ProgressBar
                 bgcolor="#ef6c00"
                 completed={Math.floor(
@@ -69,12 +71,10 @@ export default function Room() {
                 )}
               />
             </div>
-            <div>
-              <b>{currentlyPlaying?.name}</b>
-              {currentlyPlaying?.artists?.map((artist, index) => (
-                <p key={index}>{artist}</p>
-              ))}
-            </div>
+            <b>{currentlyPlaying?.name}</b>
+            {currentlyPlaying?.artists?.map((artist, index) => (
+              <p key={index}>{artist}</p>
+            ))}
           </div>
         </div>
         <button>OPTION 1</button>
