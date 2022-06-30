@@ -41,11 +41,21 @@ router.put("/playback", checkSession, async (req, res) => {
   try {
     const session = req.session;
 
-    const room = await Room.findOne({ code: req.query.code });
+    const { code, option } = req.body;
+
+    const room = await Room.findOne({ code });
 
     if (!room) {
       return res.status(400).json({ status: "error", error: "Room not found" });
     }
+
+    let newOptions = room.options;
+    
+    try {
+      newOptions[option].votes += 1;
+    } catch (_) { }
+    
+    await Room.updateOne({ _id: room._id }, { options: newOptions });
 
     return res.status(200).json({ status: "success", session });
   } catch (error) {

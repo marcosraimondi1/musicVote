@@ -1,17 +1,22 @@
 const { generateRandomString } = require("../helper/fetchApi.js");
 
 const checkSession = (req, res, next) => {
-  let session = JSON.parse(req.get("session"));
+  let session = req.get("session");
 
-  if (!session || !session.id) {
-    // create new session
-    req.session = {
-      id: generateRandomString(20)
-    };
-  } else {
-    // use session
-    req.session = session;
+  if (session) {
+    try {
+      req.session = JSON.parse(session);
+      if (session.id) {
+        next();
+        return;
+      }
+    } catch (error) {}
   }
+
+  // create new session
+  req.session = {
+    id: generateRandomString(20)
+  };
 
   next();
 };
