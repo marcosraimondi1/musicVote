@@ -47,15 +47,13 @@ router.put("/playback", checkSession, async (req, res) => {
       return res.status(400).json({ status: "error", error: "Room not found" });
     }
 
-    return res.status(200).json({ status: "success", data: currently_playing, session });
+    return res.status(200).json({ status: "success", session });
   } catch (error) {
     console.log("Error joining room");
     console.log(error);
     return res.status(500).json({ status: "error", error: "Server error" });
   }
 });
-
-
 
 /**
  * F U N C T I O N S
@@ -87,6 +85,5 @@ async function check_tokens(room) {
     }
   }
 }
-
 
 module.exports = router;

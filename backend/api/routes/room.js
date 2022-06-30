@@ -8,7 +8,7 @@ const { generateRandomString } = require("../helper/fetchApi.js");
 const router = express.Router();
 
 /**
- * Ruta para unirse a una sala 
+ * Ruta para unirse a una sala
  */
 router.get("/room", checkSession, async (req, res) => {
   try {
@@ -78,4 +78,3 @@ router.post("/room", async (req, res) => {
 });
 
 module.exports = router;
-
