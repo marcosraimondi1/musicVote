@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 /**
  * 	Get Playback State
  * 	@param {string} access_token - spotify access token
