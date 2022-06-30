@@ -1,6 +1,7 @@
 const appRouter = require("./routes/app.js");
 const spotifyRouter = require("./routes/spotify.js");
 const roomRouter = require("./routes/room.js");
+const playbackRouter = require("./routes/playback.js");
 const healthRouter = require("./routes/health.js");
 
 const express = require("express");
@@ -33,6 +34,7 @@ function express_config() {
   app.use("/api", healthRouter); // check application health status
   app.use("/api", spotifyRouter);
   app.use("/api", roomRouter);
+  app.use("/api", playbackRouter);
 
   // serve static build
   app.use("/", appRouter);
