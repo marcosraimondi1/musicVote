@@ -1,15 +1,14 @@
 const express = require("express");
-require("dotenv").config();
 
 // models import
 const { Room } = require("../models/room.js");
 const { checkSession } = require("../middlewares/authentication.js");
-const { refreshTokens, generateRandomString } = require("../helper/fetchApi.js");
+const { generateRandomString } = require("../helper/fetchApi.js");
 
 const router = express.Router();
 
 /**
- * Ruta para unirse a una sala
+ * Ruta para unirse a una sala 
  */
 router.get("/room", checkSession, async (req, res) => {
   try {
@@ -21,7 +20,7 @@ router.get("/room", checkSession, async (req, res) => {
       return res.status(400).json({ status: "error", error: "Room not found" });
     }
 
-    return res.status(200).json({ status: "success", data: room, session });
+    return res.status(200).json({ status: "success", session });
   } catch (error) {
     console.log("Error joining room");
     console.log(error);
@@ -44,8 +43,6 @@ router.put("/room", checkSession, async (req, res) => {
     if (room.user_session_id == "$") {
       await Room.updateOne({ code }, { user_session_id });
     }
-
-    await check_tokens(room._id);
 
     return res.status(200).json({ status: "success", session: req.session });
   } catch (error) {
@@ -82,34 +79,3 @@ router.post("/room", async (req, res) => {
 
 module.exports = router;
 
-/**
- * F U N C T I O N S
- */
-
-/**
- * Revisa si expiro el token
- * @param {number} expires_in
- * @returns bool
- */
-function is_token_expired(expires_in) {
-  if (expires_in <= Date.now()) {
-    // expiro el token
-    return true;
-  }
-  return false;
-}
-
-/**
- * Revisa la validez de los tokens, y los actualiza
- * @param {string} userId
- */
-async function check_tokens(roomId) {
-  const room = await Room.findOne({ _id: roomId });
-  if (room) {
-    if (is_token_expired(room.tokens.expires_in)) {
-      // si expiro actualizamos los tokens
-      const tokens = await refreshTokens(room.tokens.refresh_token);
-      await Room.updateOne({ _id: roomId }, { tokens });
-    }
-  }
-}
