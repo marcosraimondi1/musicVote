@@ -3,7 +3,11 @@ const express = require("express");
 // models import
 const { Room } = require("../models/room.js");
 const { checkSession } = require("../middlewares/authentication.js");
-const { generateRandomString, fetchPlaylistSongs } = require("../helper/fetchApi.js");
+const {
+  generateRandomString,
+  fetchPlaylistSongs,
+  fetchPlaylists
+} = require("../helper/fetchApi.js");
 
 const router = express.Router();
 
@@ -76,6 +80,30 @@ router.post("/room", async (req, res) => {
     console.log(error);
     return res.status(500).json({ status: "error" });
   }
+});
+
+/**
+ * 	For getting users playlists
+ */
+
+router.get("/getPlaylists", async (req, res) => {
+  try {
+    const room = await Room.findOne({ code: req.query.code });
+
+    if (!room) {
+      return res.status(400).json({ status: "error", error: "Room not found" });
+    }
+
+    const playlists = await fetchPlaylists(room.tokens.access_token);
+    
+    if (playlists) {
+      return res.json({ status: "success", data: playlists.filter(e=>e.total > 5) });
+    }
+  } catch (error) {
+    console.log("ERROR GETTING PLAYLISTS");
+    console.log(error);
+  }
+  return res.json({ status: "error", error: "request failed" });
 });
 
 module.exports = router;

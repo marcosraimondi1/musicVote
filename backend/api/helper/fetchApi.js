@@ -152,18 +152,14 @@ async function fetchPlaylists(access_token) {
     console.log(playlists);
     return null;
   }
-
-  const data = {};
-
-  playlists.items.map((item) => {
+  const data = playlists.items.map((item) => {
     // return only some data
-    let new_item = {
+    return {
       name: item.name,
       description: item.description,
-      id: item.id
+      id: item.id,
+      total: item.tracks.total
     };
-
-    data[item.id] = new_item;
   });
   return data;
 }
