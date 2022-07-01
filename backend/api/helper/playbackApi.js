@@ -52,6 +52,7 @@ async function getCurrentlyPlaying(access_token) {
         image: currentlyPlaying?.item?.album?.images[0].url,
         duration_ms: currentlyPlaying?.item?.duration_ms,
         name: currentlyPlaying?.item?.name,
+        id: currentlyPlaying?.item?.id,
         is_playing: currentlyPlaying?.is_playing
       };
       return data;
