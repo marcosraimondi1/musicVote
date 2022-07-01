@@ -63,7 +63,9 @@ router.put("/playback", checkSession, async (req, res) => {
 
     try {
       newOptions[option].votes += 1;
-    } catch (_) {}
+    } catch (_) {
+      // continue
+    }
 
     await Room.updateOne({ _id: room._id }, { options: newOptions });
 
@@ -101,7 +103,6 @@ async function checkNext(currently_playing, room, options) {
 
     await addToQueue(room.tokens.access_token, uri);
     await skipNext(room.tokens.access_token);
-  
   } else if (room.selected && time_left > 6000) {
     await Room.updateOne({ _id: room._id }, { selected: false });
   }

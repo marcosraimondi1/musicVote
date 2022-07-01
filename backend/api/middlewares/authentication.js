@@ -10,7 +10,9 @@ const checkSession = (req, res, next) => {
         next();
         return;
       }
-    } catch (error) {}
+    } catch (error) {
+      // continue
+    }
   }
 
   // create new session
