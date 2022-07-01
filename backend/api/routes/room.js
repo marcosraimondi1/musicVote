@@ -38,14 +38,14 @@ router.get("/room", checkSession, async (req, res) => {
 router.put("/room", checkSession, async (req, res) => {
   try {
     const user_session_id = req.session.id;
-    const code = req.body.code;
+    const { code, playlistId } = req.body;
 
     const room = await Room.findOne({ code });
 
     if (!room) return res.status(404).json({ status: "error", error: "room not found" });
 
     if (room.user_session_id == "$") {
-      const playlist = await fetchPlaylistSongs(room.tokens.access_token, "37i9dQZEVXbMDoHDwVN2tF");
+      const playlist = await fetchPlaylistSongs(room.tokens.access_token, playlistId);
       await Room.updateOne({ code }, { user_session_id, playlist, options: playlist.slice(0, 2) });
     }
 
@@ -95,9 +95,9 @@ router.get("/getPlaylists", async (req, res) => {
     }
 
     const playlists = await fetchPlaylists(room.tokens.access_token);
-    
+
     if (playlists) {
-      return res.json({ status: "success", data: playlists.filter(e=>e.total > 5) });
+      return res.json({ status: "success", data: playlists.filter((e) => e.total > 5) });
     }
   } catch (error) {
     console.log("ERROR GETTING PLAYLISTS");
