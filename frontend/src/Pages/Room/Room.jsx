@@ -8,6 +8,7 @@ export default function Room() {
   const [currentlyPlaying, setCurrentlyPlaying] = useState({});
   const [options, setOptions] = useState([]);
   const [session, setSession] = useState({});
+  const [voted, setVoted] = useState(false);
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -36,7 +37,7 @@ export default function Room() {
         const data = await res.json();
 
         if (data.status === "success") {
-          setCurrentlyPlaying(data.data.currentlyPlaying);
+          setCurrentlyPlaying(data.data.currently_playing);
           setOptions(data.data.options);
         } else {
           alert("Room not found");
@@ -50,7 +51,29 @@ export default function Room() {
       clearInterval(dataPolling);
     };
   }, []);
-  console.log(options);
+
+  const vote = async (option) => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const url = `${API_BASE_URL}/playback`;
+
+      const body = { option, code: roomCode };
+      await fetch(url, {
+        method: "PUT",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          session: JSON.stringify(session)
+        },
+        body: JSON.stringify(body)
+      });
+      
+    } catch (error) {
+      console.log(error);
+    }
+    setVoted(true);
+  };
+
   return (
     <>
       <Header id="spotify-masthead" title={`Room ${roomCode}`} description="Vote for next song">
@@ -95,12 +118,15 @@ export default function Room() {
                 alignItems: "center"
               }}
             >
-              <button>
+              <button disabled={voted} onClick={() => vote(index)}>
                 <b>{option?.name}</b>
               </button>
               <br></br>
               <img src={option?.image} alt="Album" height="50" width="50" />
               <p>{option?.artists[0]?.name}</p>
+              <p>
+                Votes: <b>{option?.votes}</b>
+              </p>
             </div>
           ))}
         </div>

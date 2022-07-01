@@ -47,9 +47,10 @@ router.get("/playback", checkSession, async (req, res) => {
 router.put("/playback", checkSession, async (req, res) => {
   try {
     const session = req.session;
-
+    
     const { code, option } = req.body;
-
+    console.log("VOTANDO");
+    console.log(code, option);
     const room = await Room.findOne({ code });
 
     if (!room) {
