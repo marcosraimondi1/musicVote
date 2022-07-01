@@ -26,7 +26,7 @@ router.get("/playback", checkSession, async (req, res) => {
 
     const currently_playing = await getCurrentlyPlaying(room.tokens.access_token);
 
-    const options = room.options.slice(0, 2);
+    const options = room.options;
 
     const data = {
       currently_playing,
@@ -92,13 +92,16 @@ async function checkNext(currently_playing, room, options) {
   const time_left = currently_playing?.duration_ms - currently_playing?.progress_ms;
   if (!room.selected && time_left < 5000) {
     // add winner to queue, skip song and shuffle options
-    const newOptions = shuffle(room.options);
+    const newOptions = shuffle(room.playlist).slice(0, 2);
+
     await Room.updateOne({ _id: room._id }, { options: newOptions, selected: true });
 
     const winner = options[0].votes > options[1].votes ? options[0] : options[1];
     const uri = "spotify:track:" + winner.id;
+
     await addToQueue(room.tokens.access_token, uri);
     await skipNext(room.tokens.access_token);
+  
   } else if (room.selected && time_left > 6000) {
     await Room.updateOne({ _id: room._id }, { selected: false });
   }

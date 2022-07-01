@@ -41,8 +41,8 @@ router.put("/room", checkSession, async (req, res) => {
     if (!room) return res.status(404).json({ status: "error", error: "room not found" });
 
     if (room.user_session_id == "$") {
-      const options = await fetchPlaylistSongs(room.tokens.access_token, "37i9dQZEVXbMDoHDwVN2tF");
-      await Room.updateOne({ code }, { user_session_id, options });
+      const playlist = await fetchPlaylistSongs(room.tokens.access_token, "37i9dQZEVXbMDoHDwVN2tF");
+      await Room.updateOne({ code }, { user_session_id, playlist, options: playlist.slice(0, 2) });
     }
 
     return res.status(200).json({ status: "success", session: req.session });

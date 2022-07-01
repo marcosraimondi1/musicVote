@@ -8,7 +8,9 @@ const roomSchema = new Schema({
   user_session_id: { type: String, required: [true] },
   code: { type: String, required: [true], unique: true },
   tokens: { type: Object, required: [true] },
-  options: { type: Array, default: [] }
+  playlist: { type: Array, default: [] }, // lista de donde elegir las opciones
+  options: { type: Array, default: [] }, // opciones para votar
+  selected: { type: Boolean, default: false } // if next song has been selected
 });
 
 // Validator
