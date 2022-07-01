@@ -26,7 +26,14 @@ router.get("/playback", checkSession, async (req, res) => {
 
     const currently_playing = await getCurrentlyPlaying(room.tokens.access_token);
 
-    return res.status(200).json({ status: "success", data: currently_playing, session });
+    const options = room.options.slice(0, 2);
+
+    const data = {
+      currently_playing,
+      options
+    };
+
+    return res.status(200).json({ status: "success", data, session });
   } catch (error) {
     console.log("Error joining room");
     console.log(error);
@@ -50,11 +57,11 @@ router.put("/playback", checkSession, async (req, res) => {
     }
 
     let newOptions = room.options;
-    
+
     try {
       newOptions[option].votes += 1;
-    } catch (_) { }
-    
+    } catch (_) {}
+
     await Room.updateOne({ _id: room._id }, { options: newOptions });
 
     return res.status(200).json({ status: "success", session });

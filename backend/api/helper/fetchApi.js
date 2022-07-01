@@ -6,8 +6,6 @@ const client_id = process.env.SPOT_CLIENT_ID;
 const client_secret = process.env.SPOT_CLIENT_SECRET;
 const redirect_uri = process.env.SPOT_REDIRECT_URI;
 
-const MAX_DURATION_MS = 10 * 60 * 1000; // 10 minutes
-
 /**
  * 	Generates Random String
  * 	@param {number} length  - String length
@@ -191,8 +189,7 @@ async function fetchPlaylistSongs(access_token, playlist_id) {
   };
 
   // query, atributos que queremos buscar
-  const fields =
-    "fields=tracks.items(track(name, duration_ms, id, artists(name), album(name, release_date)))";
+  const fields = "fields=tracks.items(track(name, id, artists(name), album(images(url))))";
 
   const url = `https://api.spotify.com/v1/playlists/${playlist_id}/?${fields}`;
 
@@ -200,14 +197,12 @@ async function fetchPlaylistSongs(access_token, playlist_id) {
     let response = await fetch(url, requestOptions);
     let result = await response.json();
     let data = result.tracks.items;
-
-    data = data
-      .map((item) => {
-        if (item.track.duration_ms > MAX_DURATION_MS) return null;
-        let { name, id, album, artists } = item.track;
-        return { name, id, album, artists };
-      })
-      .filter((item) => item);
+    data = data.map((item) => {
+      let { name, id, album, artists } = item.track;
+      let image = album?.images[0];
+      image = image.url;
+      return { name, id, image, artists, votes: 0 };
+    });
 
     return data;
   } catch (error) {

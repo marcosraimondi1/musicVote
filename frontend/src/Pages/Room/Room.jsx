@@ -6,6 +6,7 @@ import ProgressBar from "../../components/ProgressBar/ProgressBar";
 export default function Room() {
   const [roomCode, setRoomCode] = useState("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState({});
+  const [options, setOptions] = useState([]);
   const [session, setSession] = useState({});
 
   useEffect(() => {
@@ -35,8 +36,8 @@ export default function Room() {
         const data = await res.json();
 
         if (data.status === "success") {
-          setCurrentlyPlaying(data.data);
-          // window.localStorage.setItem("session", JSON.stringify(data.session));
+          setCurrentlyPlaying(data.data.currentlyPlaying);
+          setOptions(data.data.options);
         } else {
           alert("Room not found");
         }
@@ -49,7 +50,7 @@ export default function Room() {
       clearInterval(dataPolling);
     };
   }, []);
-
+  console.log(options);
   return (
     <>
       <Header id="spotify-masthead" title={`Room ${roomCode}`} description="Vote for next song">
@@ -77,8 +78,32 @@ export default function Room() {
             ))}
           </div>
         </div>
-        <button>OPTION 1</button>
-        <button>OPTION 2</button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-around"
+          }}
+        >
+          {options?.map((option, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}
+            >
+              <button>
+                <b>{option?.name}</b>
+              </button>
+              <br></br>
+              <img src={option?.image} alt="Album" height="50" width="50" />
+              <p>{option?.artists[0]?.name}</p>
+            </div>
+          ))}
+        </div>
       </Header>
       <Footer />
     </>

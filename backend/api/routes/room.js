@@ -3,7 +3,7 @@ const express = require("express");
 // models import
 const { Room } = require("../models/room.js");
 const { checkSession } = require("../middlewares/authentication.js");
-const { generateRandomString } = require("../helper/fetchApi.js");
+const { generateRandomString, fetchPlaylistSongs } = require("../helper/fetchApi.js");
 
 const router = express.Router();
 
@@ -41,7 +41,8 @@ router.put("/room", checkSession, async (req, res) => {
     if (!room) return res.status(404).json({ status: "error", error: "room not found" });
 
     if (room.user_session_id == "$") {
-      await Room.updateOne({ code }, { user_session_id });
+      const options = await fetchPlaylistSongs(room.tokens.access_token, "37i9dQZEVXbMDoHDwVN2tF");
+      await Room.updateOne({ code }, { user_session_id, options });
     }
 
     return res.status(200).json({ status: "success", session: req.session });
