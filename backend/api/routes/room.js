@@ -17,7 +17,6 @@ const router = express.Router();
 router.get("/room", checkSession, async (req, res) => {
   try {
     const session = req.session;
-
     const room = await Room.findOne({ code: req.query.code });
 
     if (!room) {
@@ -39,7 +38,7 @@ router.put("/room", checkSession, async (req, res) => {
   try {
     const user_session_id = req.session.id;
     const { code, playlistId, n_options } = req.body;
-
+    console.log(playlistId);
     if (n_options < 2 || n_options > 5)
       return res.status(400).json({ status: "error", error: "wrong number of options" });
 
@@ -89,9 +88,35 @@ router.post("/room", async (req, res) => {
 });
 
 /**
+ * Ruta para eliminar una sala
+ */
+router.delete("/room", checkSession, async (req, res) => {
+  try {
+    const session = req.session;
+
+    const room = await Room.findOne({ code: req.query.code });
+
+    if (!room) {
+      return res.status(400).json({ status: "error", error: "Room not found" });
+    }
+
+    if (room.user_session_id == session.id) {
+      // delete room
+      console.log("Borrando sala");
+      await Room.deleteOne({ _id: room._id });
+    }
+
+    return res.status(200).json({ status: "success", session });
+  } catch (error) {
+    console.log("Error joining room");
+    console.log(error);
+    return res.status(500).json({ status: "error", error: "Server error" });
+  }
+});
+
+/**
  * 	For getting users playlists
  */
-
 router.get("/getPlaylists", async (req, res) => {
   try {
     const room = await Room.findOne({ code: req.query.code });
