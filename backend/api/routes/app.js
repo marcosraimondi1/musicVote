@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(express.static(build_path));
 
-const allowed_routes = ["/", "/room"];
+const allowed_routes = ["/", "/room", "/create"];
 
 router.get(allowed_routes, async (req, res) => {
   try {
