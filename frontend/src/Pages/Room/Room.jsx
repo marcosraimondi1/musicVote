@@ -52,6 +52,10 @@ export default function Room() {
     };
   }, []);
 
+  useEffect(() => {
+    setVoted(false);
+  }, [options[0]?.id]);
+
   const vote = async (option) => {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -67,7 +71,6 @@ export default function Room() {
         },
         body: JSON.stringify(body)
       });
-      
     } catch (error) {
       console.log(error);
     }
