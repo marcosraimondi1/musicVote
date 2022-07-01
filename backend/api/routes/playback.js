@@ -57,9 +57,7 @@ router.put("/playback", checkSession, async (req, res) => {
 
     const room = await Room.findOne({ code });
 
-    if (!room) {
-      return res.status(400).json({ status: "error", error: "Room not found" });
-    }
+    if (!room) return res.status(400).json({ status: "error", error: "Room not found" });
 
     let newOptions = room.options;
 
@@ -90,15 +88,19 @@ router.put("/playback", checkSession, async (req, res) => {
  * @param {Array} options
  */
 async function checkNext(currently_playing, room, options) {
-  if (currently_playing?.duration_ms - currently_playing?.progress_ms < 5000) {
+  // si faltan menos de 5 segundos
+  const time_left = currently_playing?.duration_ms - currently_playing?.progress_ms;
+  if (!room.selected && time_left < 5000) {
     // add winner to queue, skip song and shuffle options
     const newOptions = shuffle(room.options);
-    await Room.updateOne({ _id: room._id }, { options: newOptions });
+    await Room.updateOne({ _id: room._id }, { options: newOptions, selected: true });
 
     const winner = options[0].votes > options[1].votes ? options[0] : options[1];
     const uri = "spotify:track:" + winner.id;
     await addToQueue(room.tokens.access_token, uri);
     await skipNext(room.tokens.access_token);
+  } else if (room.selected && time_left > 6000) {
+    await Room.updateOne({ _id: room._id }, { selected: false });
   }
 }
 
