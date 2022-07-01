@@ -5,7 +5,7 @@ require("dotenv").config();
 const { Room } = require("../models/room.js");
 const { checkSession } = require("../middlewares/authentication.js");
 const { refreshTokens } = require("../helper/fetchApi.js");
-const { getCurrentlyPlaying } = require("../helper/playbackApi.js");
+const { getCurrentlyPlaying, addToQueue, skipNext } = require("../helper/playbackApi.js");
 
 const router = express.Router();
 
@@ -33,7 +33,12 @@ router.get("/playback", checkSession, async (req, res) => {
       options
     };
 
-    return res.status(200).json({ status: "success", data, session });
+    res.status(200).json({ status: "success", data, session });
+
+    // revisar si hay que elegir un ganador (si faltan menos de 5 segundos)
+    await checkNext(currently_playing, room, options);
+
+    return;
   } catch (error) {
     console.log("Error joining room");
     console.log(error);
@@ -47,10 +52,9 @@ router.get("/playback", checkSession, async (req, res) => {
 router.put("/playback", checkSession, async (req, res) => {
   try {
     const session = req.session;
-    
+
     const { code, option } = req.body;
-    console.log("VOTANDO");
-    console.log(code, option);
+
     const room = await Room.findOne({ code });
 
     if (!room) {
@@ -78,6 +82,27 @@ router.put("/playback", checkSession, async (req, res) => {
  */
 
 /**
+ * Revisa si hay que elegir la siguiente cancion,
+ * en caso afirmativo, agrega la cancion con mas votos a la cola
+ * y pasa a la siguiente cancion
+ * @param {Object} currently_playing
+ * @param {Object} room
+ * @param {Array} options
+ */
+async function checkNext(currently_playing, room, options) {
+  if (currently_playing?.duration_ms - currently_playing?.progress_ms < 5000) {
+    // add winner to queue, skip song and shuffle options
+    const newOptions = shuffle(room.options);
+    await Room.updateOne({ _id: room._id }, { options: newOptions });
+
+    const winner = options[0].votes > options[1].votes ? options[0] : options[1];
+    const uri = "spotify:track:" + winner.id;
+    await addToQueue(room.tokens.access_token, uri);
+    await skipNext(room.tokens.access_token);
+  }
+}
+
+/**
  * Revisa si expiro el token
  * @param {number} expires_in
  * @returns bool
@@ -102,6 +127,23 @@ async function check_tokens(room) {
       await Room.updateOne({ _id: room._id }, { tokens });
     }
   }
+}
+
+function shuffle(array) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
 }
 
 module.exports = router;
