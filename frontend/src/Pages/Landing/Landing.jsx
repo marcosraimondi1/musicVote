@@ -48,7 +48,7 @@ export default function Login() {
 
   return (
     <>
-      <Header id="spotify-masthead" title="Spotify Voting Lobby" description="Join or Start a room">
+      <Header id="spotify-masthead" title="Let's DJ" description="Join or Start a room">
         <input value={code} onChange={(ev) => setCode(ev.target.value)} />
         <button onClick={() => join(code)}>Join Room</button>
         <button onClick={login}>New Room</button>

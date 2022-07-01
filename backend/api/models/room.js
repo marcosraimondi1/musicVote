@@ -10,6 +10,7 @@ const roomSchema = new Schema({
   tokens: { type: Object, required: [true] },
   playlist: { type: Array, default: [] }, // lista de donde elegir las opciones
   options: { type: Array, default: [] }, // opciones para votar
+  n_options: { type: Number, default: 2 },
   selected: { type: Boolean, default: false } // if next song has been selected
 });
 

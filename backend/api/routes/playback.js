@@ -94,11 +94,15 @@ async function checkNext(currently_playing, room, options) {
   const time_left = currently_playing?.duration_ms - currently_playing?.progress_ms;
   if (!room.selected && time_left < 5000) {
     // add winner to queue, skip song and shuffle options
-    const newOptions = shuffle(room.playlist).slice(0, 2);
+    const newOptions = shuffle(room.playlist).slice(0, room.n_options);
 
     await Room.updateOne({ _id: room._id }, { options: newOptions, selected: true });
 
-    const winner = options[0].votes > options[1].votes ? options[0] : options[1];
+    let winner = options[0];
+    options.forEach((option) => {
+      if (option.votes >= winner.votes) winner = option;
+    });
+
     const uri = "spotify:track:" + winner.id;
 
     await addToQueue(room.tokens.access_token, uri);

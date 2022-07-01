@@ -38,7 +38,10 @@ router.get("/room", checkSession, async (req, res) => {
 router.put("/room", checkSession, async (req, res) => {
   try {
     const user_session_id = req.session.id;
-    const { code, playlistId } = req.body;
+    const { code, playlistId, n_options } = req.body;
+
+    if (n_options < 2 || n_options > 5)
+      return res.status(400).json({ status: "error", error: "wrong number of options" });
 
     const room = await Room.findOne({ code });
 
@@ -46,7 +49,10 @@ router.put("/room", checkSession, async (req, res) => {
 
     if (room.user_session_id == "$") {
       const playlist = await fetchPlaylistSongs(room.tokens.access_token, playlistId);
-      await Room.updateOne({ code }, { user_session_id, playlist, options: playlist.slice(0, 2) });
+      await Room.updateOne(
+        { code },
+        { user_session_id, playlist, n_options, options: playlist.slice(0, n_options) }
+      );
     }
 
     return res.status(200).json({ status: "success", session: req.session });

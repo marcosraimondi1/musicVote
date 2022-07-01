@@ -11763,8 +11763,6 @@ html {
 
 .callout {
   padding: 15rem 0;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/bg/bg-cv.jpg");
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -11821,8 +11819,6 @@ footer.footer .social-link:hover {
   height: auto;
   padding-top: 8rem;
   padding-bottom: 8rem;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/bg/bg-pc.jpg");
   background-position: center center;
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -11927,69 +11923,10 @@ footer.footer .social-link:hover {
   cursor: "pointer";
 }
 
-#portfolio {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/bg/bg-glass.jpg");
-  background-position: center center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-#insta-masthead {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/portfolio/instagram.jpg");
-  background-position: center center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-#ccalc-masthead {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/portfolio/ccalc.jpg");
-  background-position: center center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: black;
-  font-weight: bold;
-}
-
-.mathjax {
-  overflow-y: hidden;
-}
-
-.mathjax::-webkit-scrollbar {
-  width: 5px;
-  height: 10px;
-  margin-top: 5px;
-  /* Safari and Chrome */
-}
-.mathjax::-webkit-scrollbar-track {
-  display: none;
-}
-.mathjax::-webkit-scrollbar-thumb {
-  background: #fd515e;
-}
-
-#ccalc-masthead #icon:hover {
-  cursor: pointer;
-}
-
-#ccalc-sheet {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 097) 0%, rgba(255, 255, 255, 0.3) 100%);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: black;
-  font-weight: bold;
-  padding: 20px;
-  margin-top: 10px;
-}
 
 #spotify-masthead {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%),
-    url("../assets/img/portfolio/spotify.jpg");
+    url("../assets/img/bg/spotify.jpg");
   background-position: center center;
   background-attachment: fixed;
   background-repeat: no-repeat;

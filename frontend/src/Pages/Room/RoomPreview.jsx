@@ -7,6 +7,7 @@ export default function RoomPreview() {
   const [roomCode, setRoomCode] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [playlistId, setPlaylistId] = useState("");
+  const [n_options, setN_options] = useState(2);
 
   const navigate = useNavigate();
 
@@ -18,7 +19,8 @@ export default function RoomPreview() {
     const url = import.meta.env.VITE_API_BASE_URL;
     const toSend = {
       code: roomCode,
-      playlistId
+      playlistId,
+      n_options
     };
     const res = await fetch(url + "/room", {
       method: "PUT",
@@ -67,25 +69,50 @@ export default function RoomPreview() {
       }
 
       setPlaylists(data.data);
+      setPlaylistId(data.data[0].id);
     }
   }, []);
 
   return (
     <>
-      <Header id="spotify-masthead" title={`Room ${roomCode}`} description="Vote for next song">
-        <select
-          value={playlistId}
-          onChange={(event) => {
-            setPlaylistId(event.target.value);
+      <Header id="spotify-masthead" title={`Room ${roomCode}`} description="Room Config">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center"
           }}
         >
-          {playlists?.map((option, index) => (
-            <option key={index} value={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </select>
-        <button onClick={startRoom}>JOIN</button>
+          <div>
+            <p>Choose a playist of possible options:</p>
+            <select
+              value={playlistId}
+              onChange={(event) => {
+                setPlaylistId(event.target.value);
+              }}
+            >
+              {playlists?.map((option, index) => (
+                <option key={index} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <p>N° of options: </p>
+            <input
+              type="number"
+              step={1}
+              min={2}
+              max={5}
+              value={n_options}
+              onChange={(ev) => setN_options(ev.target.value)}
+            />
+          </div>
+          <br />
+          <button onClick={startRoom}>START</button>
+        </div>
       </Header>
       <Footer />
     </>
