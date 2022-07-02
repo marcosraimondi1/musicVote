@@ -44,11 +44,7 @@ echo -------------------------- versions ------------------------------------
 
 # C O N F I G U R A C I O N E S __ D E __ P R O Y E C T O (clonar repo, build front, env variables, run docker-compose)
 
-sudo git clone https://github.com/marcosraimondi1/appPlatform.git webserver
-
-sudo rm -r ./webserver/backend/ffmpeg
-
-cd webserver
+cd ..
 
 # configurar archivo .env
 
