@@ -69,7 +69,7 @@ router.get("/callback", async (req, res) => {
 
     // redirect to web app
     let link = "http://localhost:3000/create?code=" + room.code;
-    
+
     if (process.env.NODE_ENV === "production") link = base_url + "create?code=" + room.code;
 
     return res.redirect(link);
