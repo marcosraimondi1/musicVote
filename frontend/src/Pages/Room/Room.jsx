@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
+import { useNavigate } from "react-router-dom";
 
 export default function Room() {
   const [roomCode, setRoomCode] = useState("");
@@ -9,6 +10,7 @@ export default function Room() {
   const [options, setOptions] = useState([]);
   const [session, setSession] = useState({});
   const [voted, setVoted] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -16,8 +18,14 @@ export default function Room() {
     const code = urlParams.get("code");
     setRoomCode(code);
 
-    const ses = JSON.parse(window.localStorage.getItem("session"));
-    setSession(ses);
+    let ses = {};
+    try {
+      ses = JSON.parse(window.localStorage.getItem("session"));
+      setSession(ses);
+    } catch (error) {
+      setSession({});
+      ses = {};
+    }
 
     const dataPolling = setInterval(fetchData, 1000);
 
@@ -41,6 +49,7 @@ export default function Room() {
           setOptions(data.data.options);
         } else {
           alert("Room not found");
+          navigate("../", { replace: true });
         }
       } catch (error) {
         console.log(error);
@@ -75,6 +84,25 @@ export default function Room() {
       console.log(error);
     }
     setVoted(true);
+  };
+
+  const leaveRoom = async () => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const url = `${API_BASE_URL}/room?code=${roomCode}`;
+
+      await fetch(url, {
+        method: "DELETE",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          session: JSON.stringify(session)
+        }
+      });
+      navigate("../", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -132,6 +160,9 @@ export default function Room() {
               </p>
             </div>
           ))}
+        </div>
+        <div>
+          <button onClick={leaveRoom}>Leave</button>
         </div>
       </Header>
       <Footer />
