@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Landing from "./Pages/Landing/Landing";
 import Room from "./Pages/Room/Room";
-import RoomPreview from "./Pages/Room/RoomPreview";
+import RoomPreview from "./Pages/RoomPreview/RoomPreview";
 
 /**
  * R O U T E R
